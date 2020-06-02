@@ -25,7 +25,7 @@ const App = () => {
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('some error happened...')
+  const [errorMessage, setErrorMessage] = useState(null)
 
  // useEffect takes two parameters - the handler (a function) and the second one speicifying when it should be rendered - empty array means only the frist time the component is rendered
  useEffect(() => {
