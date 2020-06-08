@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import noteService from './services/persons'
+import personService from './services/persons'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
@@ -14,46 +14,65 @@ const App = () => {
 
   // on first rendering of the app, setPersons with the data from that url
   useEffect(() => {
-    noteService
+    personService
       .getAll()
       .then(initialPersons => setPersons(initialPersons))
   }, [])
 
-  const showMessage = () => {
-      setMessage(`You successfully updated the phonebook - good job!`)
+  const showMessage = (msg) => {
+      setMessage(msg)
       setTimeout(() => {setMessage(null)}, 5000)}
 
   const addPerson = (event) => {
     event.preventDefault()
     const personObject = {name: newName, number: newNumber}
     if (!(onlyNames.includes(newName))) {
-        noteService
+        personService
         .create(personObject)
         .then(returnedPerson => {
          setPersons(persons.concat(returnedPerson))
-         showMessage()
-      })}
-      // else {
-      //     if (window.confirm(`${newName} is already added to the phonebook. Do you want to replace their old number with this new number?`)){
-      //         const thisPerson = persons.filter((person) => person.name === newName)[0]
-      //         const newPerson = {id: thisPerson.id, name: thisPerson.name, number: newNumber}
-      //         noteService.update(thisPerson.id, newPerson)
-      //         const without_old = persons.filter((person) => person.id !== thisPerson.id)
-      //         setPersons(without_old.concat(newPerson))
-      //         showMessage()
-      //     }}
+         showMessage('You successfully updated the phonebook! Good job!')
+      })
+      .catch(error => {showMessage(error.response.data.error)})
+  }
 
       else {
           if (window.confirm(`${newName} is already added to the phonebook. Do you want to replace their old number with this new number?`)){
               const thisPerson = persons.filter((person) => person.name === newName)[0]
               const newPerson = {id: thisPerson.id, name: thisPerson.name, number: newNumber}
               const without_old = persons.filter((person) => person.id !== thisPerson.id)
-              noteService.update(thisPerson.id, newPerson)
+              personService.update(thisPerson.id, newPerson)
               .then(returnedPerson => {setPersons(without_old.concat(returnedPerson))})
-              .catch(error => {setMessage('There has been an error. Please refresh and try again.')})
-              showMessage()
+              .catch(error => {showMessage('There has been an error. Please refresh and try again.')})
+              showMessage('You successfully updated the phonebook! Good job!')
           }
       }
+
+
+    //   personService
+    //   .create(personObject)
+    //   .then(returnedPerson => {
+    //    setPersons(persons.concat(returnedPerson))
+    //    showMessage('You succefully updated the phonebook - great job!')
+    // })
+    // .catch(error => {
+    //     console.log(error.response.data.error)
+    //     if (error.response.data.error.includes('unique')) {
+    //         if (window.confirm(`${newName} is already added to the phonebook. Do you want to replace their old number with this new number?`)){
+    //               const thisPerson = persons.filter((person) => person.name === newName)[0]
+    //               const newPerson = {id: thisPerson.id, name: thisPerson.name, number: newNumber}
+    //               const without_old = persons.filter((person) => person.id !== thisPerson.id)
+    //               personService.update(thisPerson.id, newPerson)
+    //               .then(returnedPerson => {setPersons(without_old.concat(returnedPerson))})
+    //               .catch(error => {showMessage('There has been an error. Please refresh and try again.')})
+    //               showMessage('You successfully updated the phonebook! Good job!')
+    //           }
+    //     }
+    //     else {
+    //     showMessage(error.response.data.error)
+    // }
+    // })
+
     setNewName('')
     setNewNumber('')
   }
@@ -66,7 +85,7 @@ const App = () => {
 
   const onDelete = (id, name) => {
       if (window.confirm(`Are you sure you want to delete ${name} from the phoebook?`))
-      {noteService.remove(id)
+      {personService.remove(id)
         setPersons(persons.filter((person) => person.id !== id))  }
   }
 

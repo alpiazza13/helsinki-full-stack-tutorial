@@ -1,4 +1,4 @@
-{
+{ "proxy": "http://localhost:3001",
   "name": "part2",
   "version": "0.1.0",
   "private": true,
@@ -36,5 +36,7 @@
   },
   "devDependencies": {
     "json-server": "^0.16.1"
-  }
+}
+
+
 }
